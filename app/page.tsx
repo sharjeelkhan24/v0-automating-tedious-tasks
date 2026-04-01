@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -51,7 +51,19 @@ interface TaskTemplate {
   requiredFields: string[]
 }
 
-export default function Home() {
+export default function Page() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen w-screen items-center justify-center">
+        <div className="w-6 h-6 rounded-full border-2 border-gray-900 border-t-transparent animate-spin" />
+      </div>
+    }>
+      <Home />
+    </Suspense>
+  )
+}
+
+function Home() {
   const [activeTab, setActiveTab] = useState("overview")
   const [task, setTask] = useState("")
   const [selectedTemplate, setSelectedTemplate] = useState("")
