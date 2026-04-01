@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: ai-on-screen-backend
+    env: python
+    buildCommand: |
+      apt-get update && apt-get install -y \
+      libx11-dev libjpeg-dev zlib1g-dev libpng-dev libtiff-dev libgl1-mesa-glx libpq-dev \
+      && pip install --upgrade pip setuptools wheel \
+      && pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ai_on_screen_db
+          property: connectionString
+      - key: GITHUB_TOKEN
+        sync: false # Set this to true if you want to sync from GitHub secrets
+      - key: GITHUB_WEBHOOK_SECRET
+        sync: false # Set this to true if you want to sync from GitHub secrets
+      - key: NEXT_PUBLIC_APP_URL
+        value: https://ai-on-screen.onrender.com # Replace with your actual frontend URL if different
+    healthCheckPath: /health
+
+databases:
+  - name: ai_on_screen_db
+    plan: free # You can change this to a paid plan for more resources
