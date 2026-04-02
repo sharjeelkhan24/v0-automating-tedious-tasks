@@ -5,7 +5,7 @@ import { Rocket, CheckCircle2, XCircle, Clock, Loader2, RefreshCw, ExternalLink,
 import { DEPLOYMENTS, REPOS } from "@/lib/seed-data"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import type { Screen, Status } from "@/lib/seed-data"
+import type { Status } from "@/lib/seed-data"
 
 const STATUS_CONFIG: Record<Status, { label: string; color: string; bg: string; border: string; icon: React.ElementType }> = {
   queued: { label: "Queued", color: "text-muted-foreground", bg: "bg-secondary", border: "border-border", icon: Clock },
@@ -22,14 +22,9 @@ const PLATFORM_COLOR: Record<string, string> = {
   "Fly.io": "text-blue-400 bg-blue-400/10 border-blue-400/20",
 }
 
-interface DeploymentsScreenProps {
-  repoId?: string
-  onNavigate: (screen: Screen, context?: Record<string, string>) => void
-}
-
-export function DeploymentsScreen({ repoId, onNavigate }: DeploymentsScreenProps) {
+export function DeploymentsScreen() {
   const [selectedDeploy, setSelectedDeploy] = useState<string | null>(DEPLOYMENTS[0].id)
-  const [filterRepo, setFilterRepo] = useState(repoId ?? "all")
+  const [filterRepo, setFilterRepo] = useState("all")
 
   const filtered = filterRepo === "all" ? DEPLOYMENTS : DEPLOYMENTS.filter((d) => d.repoId === filterRepo)
   const activeDeploy = DEPLOYMENTS.find((d) => d.id === selectedDeploy)

@@ -19,10 +19,11 @@ const LANG_COLOR: Record<string, string> = {
 }
 
 interface RepositoriesScreenProps {
-  onNavigate: (screen: Screen, context?: Record<string, string>) => void
+  selectedRepo?: string
+  onNavigate: (screen: Screen) => void
 }
 
-export function RepositoriesScreen({ onNavigate }: RepositoriesScreenProps) {
+export function RepositoriesScreen({ selectedRepo: _selectedRepo, onNavigate }: RepositoriesScreenProps) {
   return (
     <div className="flex flex-col gap-6 p-6">
       <div className="flex items-center justify-between">
@@ -117,7 +118,7 @@ export function RepositoriesScreen({ onNavigate }: RepositoriesScreenProps) {
                   variant="ghost"
                   size="sm"
                   className="flex-1 text-xs h-7 text-muted-foreground hover:text-foreground"
-                  onClick={() => onNavigate("analysis", { repoId: repo.id })}
+                  onClick={() => onNavigate("analysis")}
                 >
                   Analyze
                 </Button>
@@ -125,7 +126,7 @@ export function RepositoriesScreen({ onNavigate }: RepositoriesScreenProps) {
                   variant="ghost"
                   size="sm"
                   className="flex-1 text-xs h-7 text-muted-foreground hover:text-foreground"
-                  onClick={() => onNavigate("deployments", { repoId: repo.id })}
+                  onClick={() => onNavigate("deployments")}
                 >
                   Deploy
                 </Button>

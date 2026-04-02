@@ -1,22 +1,22 @@
 "use client"
 
-import { useState } from "react"
 import {
-  LayoutDashboard, GitBranch, ScanSearch, Wrench,
-  GitPullRequest, Rocket, Settings, ChevronRight,
-  Activity, Cpu,
+  LayoutDashboard, Monitor, GitBranch, ScanSearch, Wrench,
+  GitPullRequest, Rocket, Activity, Settings, ChevronRight, Cpu,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { Screen } from "@/lib/seed-data"
 
 const NAV_ITEMS: { id: Screen; label: string; icon: React.ElementType; badge?: number }[] = [
-  { id: "overview", label: "Overview", icon: LayoutDashboard },
-  { id: "repositories", label: "Repositories", icon: GitBranch, badge: 4 },
-  { id: "analysis", label: "Analysis", icon: ScanSearch, badge: 19 },
-  { id: "fixes", label: "Fixes", icon: Wrench, badge: 2 },
-  { id: "pull-requests", label: "Pull Requests", icon: GitPullRequest, badge: 2 },
-  { id: "deployments", label: "Deployments", icon: Rocket },
-  { id: "settings", label: "Settings", icon: Settings },
+  { id: "overview",      label: "Overview",      icon: LayoutDashboard },
+  { id: "screen-agent",  label: "Screen Agent",  icon: Monitor },
+  { id: "repositories",  label: "Repositories",  icon: GitBranch, badge: 4 },
+  { id: "analysis",      label: "Analysis",      icon: ScanSearch, badge: 19 },
+  { id: "fixes",         label: "Fixes",         icon: Wrench, badge: 2 },
+  { id: "pull-requests", label: "Pull Requests",  icon: GitPullRequest, badge: 2 },
+  { id: "deployments",   label: "Deployments",   icon: Rocket },
+  { id: "activity",      label: "Activity",      icon: Activity },
+  { id: "settings",      label: "Settings",      icon: Settings },
 ]
 
 interface SidebarProps {
@@ -32,7 +32,7 @@ export function Sidebar({ active, onNavigate }: SidebarProps) {
         <div className="w-7 h-7 rounded-lg bg-indigo-500 flex items-center justify-center">
           <Cpu className="w-4 h-4 text-white" />
         </div>
-        <span className="font-semibold text-sm tracking-tight text-foreground">MASE Copilot</span>
+        <span className="font-semibold text-sm tracking-tight text-foreground">MASE Platform</span>
       </div>
 
       {/* Nav */}

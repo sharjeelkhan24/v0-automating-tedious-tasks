@@ -5,7 +5,6 @@ import { CheckCircle2, XCircle, Clock, GitMerge, GitPullRequest } from "lucide-r
 import { PULL_REQUESTS, REPOS } from "@/lib/seed-data"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import type { Screen } from "@/lib/seed-data"
 
 const CHECK_ICON = {
   pass: CheckCircle2,
@@ -19,11 +18,10 @@ const CHECK_COLOR = {
 }
 
 interface PullRequestScreenProps {
-  issueId?: string
-  onNavigate: (screen: Screen, context?: Record<string, string>) => void
+  prId?: string | null
 }
 
-export function PullRequestScreen({ onNavigate }: PullRequestScreenProps) {
+export function PullRequestScreen({ prId: _prId }: PullRequestScreenProps) {
   const [merged, setMerged] = useState<Record<string, boolean>>({})
   const [declined, setDeclined] = useState<Record<string, boolean>>({})
 
@@ -140,7 +138,6 @@ export function PullRequestScreen({ onNavigate }: PullRequestScreenProps) {
                     variant="outline"
                     size="sm"
                     className="gap-1.5 text-xs h-8 ml-auto border-border text-muted-foreground"
-                    onClick={() => onNavigate("deployments", { repoId: pr.repoId })}
                   >
                     View Deployments
                   </Button>

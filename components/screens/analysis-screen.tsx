@@ -5,7 +5,7 @@ import { AlertTriangle, ShieldAlert, Zap, FileCode, ChevronRight, Loader2, Check
 import { REPOS, ISSUES } from "@/lib/seed-data"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import type { Screen, Severity } from "@/lib/seed-data"
+import type { Screen, Severity, ModelTier } from "@/lib/seed-data"
 
 const SEVERITY_CONFIG: Record<Severity, { label: string; color: string; bg: string; border: string; icon: React.ElementType }> = {
   critical: { label: "Critical", color: "text-red-400", bg: "bg-red-400/10", border: "border-red-400/20", icon: ShieldAlert },
@@ -23,12 +23,13 @@ const CATEGORY_LABEL: Record<string, string> = {
 }
 
 interface AnalysisScreenProps {
-  repoId?: string
-  onNavigate: (screen: Screen, context?: Record<string, string>) => void
+  selectedRepo?: string
+  selectedModel?: ModelTier
+  onSelectIssue?: (issueId: string) => void
 }
 
-export function AnalysisScreen({ repoId, onNavigate }: AnalysisScreenProps) {
-  const [selectedRepo, setSelectedRepo] = useState(repoId ?? "r1")
+export function AnalysisScreen({ selectedRepo: repoIdProp, selectedModel: _selectedModel, onSelectIssue }: AnalysisScreenProps) {
+  const [selectedRepo, setSelectedRepo] = useState(repoIdProp ?? "r1")
   const [expandedIssue, setExpandedIssue] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<string>("all")
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -180,7 +181,7 @@ export function AnalysisScreen({ repoId, onNavigate }: AnalysisScreenProps) {
                     <Button
                       size="sm"
                       className="text-xs h-7 bg-indigo-500 hover:bg-indigo-600 text-white gap-1.5"
-                      onClick={() => onNavigate("fixes", { issueId: issue.id })}
+                      onClick={() => onSelectIssue?.(issue.id)}
                     >
                       <Wrench className="w-3 h-3" />
                       Generate Fix

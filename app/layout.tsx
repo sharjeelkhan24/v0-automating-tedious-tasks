@@ -7,8 +7,8 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 export const metadata: Metadata = {
-  title: "MASE Platform — AI Screen Automation",
-  description: "AI-powered screen automation and development assistant",
+  title: "MASE Platform — AI Operations Workspace",
+  description: "Production AI platform for screen automation and engineering workflows — powered by MASE",
   generator: "v0.dev",
 }
 

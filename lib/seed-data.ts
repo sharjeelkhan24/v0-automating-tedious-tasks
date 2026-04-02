@@ -3,7 +3,7 @@
 export type Severity = "critical" | "high" | "medium" | "low"
 export type Status = "queued" | "running" | "succeeded" | "failed" | "cancelled"
 export type ModelTier = "fast" | "balanced" | "deep"
-export type Screen = "overview" | "repositories" | "analysis" | "fixes" | "pull-requests" | "deployments" | "settings"
+export type Screen = "overview" | "screen-agent" | "repositories" | "analysis" | "fixes" | "pull-requests" | "deployments" | "activity" | "settings"
 
 export interface Repo {
   id: string

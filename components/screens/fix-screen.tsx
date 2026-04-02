@@ -5,7 +5,7 @@ import { CheckCircle2, XCircle, GitPullRequest, AlertTriangle, FileCode, ShieldC
 import { ISSUES, FIXES, REPOS } from "@/lib/seed-data"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import type { Screen } from "@/lib/seed-data"
+import type { ModelTier } from "@/lib/seed-data"
 
 const RISK_COLOR = {
   low: "text-green-400 bg-green-400/10 border-green-400/20",
@@ -14,11 +14,12 @@ const RISK_COLOR = {
 }
 
 interface FixScreenProps {
-  issueId?: string
-  onNavigate: (screen: Screen, context?: Record<string, string>) => void
+  issueId?: string | null
+  model?: ModelTier
+  onOpenPR?: (prId: string) => void
 }
 
-export function FixScreen({ issueId, onNavigate }: FixScreenProps) {
+export function FixScreen({ issueId, model: _model, onOpenPR }: FixScreenProps) {
   const [selectedIssueId, setSelectedIssueId] = useState(issueId ?? FIXES[0].issueId)
   const [approved, setApproved] = useState<Record<string, boolean>>({})
   const [rejected, setRejected] = useState<Record<string, boolean>>({})
@@ -153,7 +154,7 @@ export function FixScreen({ issueId, onNavigate }: FixScreenProps) {
                 </Button>
                 <Button
                   className="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white text-sm gap-2"
-                  onClick={() => onNavigate("pull-requests", { issueId: selectedIssueId })}
+                  onClick={() => onOpenPR?.("pr1")}
                 >
                   <GitPullRequest className="w-4 h-4" />
                   Open PR
@@ -163,7 +164,7 @@ export function FixScreen({ issueId, onNavigate }: FixScreenProps) {
               <div className="flex items-center gap-2 p-3 rounded-lg bg-green-400/10 border border-green-400/20">
                 <CheckCircle2 className="w-4 h-4 text-green-400" />
                 <p className="text-sm text-green-400 font-medium">Patch approved — ready to open PR</p>
-                <Button size="sm" className="ml-auto bg-indigo-500 hover:bg-indigo-600 text-white text-xs" onClick={() => onNavigate("pull-requests", { issueId: selectedIssueId })}>
+                <Button size="sm" className="ml-auto bg-indigo-500 hover:bg-indigo-600 text-white text-xs" onClick={() => onOpenPR?.("pr1")}>
                   Open PR
                 </Button>
               </div>
