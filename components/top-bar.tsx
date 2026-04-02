@@ -35,7 +35,7 @@ export function TopBar({
   const ModelIcon = MODEL_ICONS[selectedModel]
 
   return (
-    <header className="flex items-center gap-2 h-14 px-4 border-b border-border bg-background shrink-0">
+      <header className="flex items-center gap-2 h-14 px-4 border-b border-border bg-background/80 backdrop-blur shrink-0">
       {/* Repo selector */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -52,7 +52,7 @@ export function TopBar({
             <DropdownMenuItem
               key={r.id}
               onClick={() => onRepoChange(r.id)}
-              className={cn("text-xs cursor-pointer", r.id === selectedRepo && "text-indigo-400")}
+              className={cn("text-xs cursor-pointer", r.id === selectedRepo && "text-primary")}
             >
               <div className="flex flex-col gap-0.5">
                 <span className="font-medium">{r.fullName}</span>
@@ -79,7 +79,7 @@ export function TopBar({
             <DropdownMenuItem
               key={b}
               onClick={() => onBranchChange(b)}
-              className={cn("text-xs cursor-pointer font-mono", b === selectedBranch && "text-indigo-400")}
+              className={cn("text-xs cursor-pointer font-mono", b === selectedBranch && "text-primary")}
             >
               {b}
             </DropdownMenuItem>
@@ -146,7 +146,7 @@ export function TopBar({
       {/* Notifications */}
       <Button variant="ghost" size="icon" className="h-8 w-8 relative text-muted-foreground hover:text-foreground">
         <Bell className="w-4 h-4" />
-        <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-indigo-400" />
+        <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-primary" />
       </Button>
     </header>
   )

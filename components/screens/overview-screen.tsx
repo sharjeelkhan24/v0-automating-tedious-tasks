@@ -41,7 +41,7 @@ export function OverviewScreen({ onNavigate }: OverviewScreenProps) {
 
   const stats = [
     { label: "System Status",       value: "Online",               sub: "All services",     icon: Activity,       color: "text-green-400",   bg: "bg-green-400/10",   screen: null },
-    { label: "Connected Repos",     value: REPOS.length,           sub: "4 active",          icon: GitBranch,      color: "text-indigo-400",  bg: "bg-indigo-400/10",  screen: "repositories" as Screen },
+    { label: "Connected Repos",     value: REPOS.length,           sub: "4 active",          icon: GitBranch,      color: "text-primary",     bg: "bg-primary/10",     screen: "repositories" as Screen },
     { label: "Active Screen Jobs",  value: 0,                      sub: "No jobs running",   icon: Monitor,        color: "text-sky-400",     bg: "bg-sky-400/10",     screen: "screen-agent" as Screen },
     { label: "Analysis Jobs",       value: 1,                      sub: "1 running",         icon: BarChart2,      color: "text-yellow-400",  bg: "bg-yellow-400/10",  screen: "analysis" as Screen },
     { label: "Pending Fixes",       value: FIXES.length,           sub: `${criticalCount} critical`, icon: Wrench, color: "text-orange-400",  bg: "bg-orange-400/10",  screen: "fixes" as Screen },
@@ -62,7 +62,7 @@ export function OverviewScreen({ onNavigate }: OverviewScreenProps) {
         {stats.map((s) => {
           const Icon = s.icon
           const el = (
-            <div className="flex flex-col gap-3 p-4 rounded-lg border border-border bg-card text-left w-full h-full">
+            <div className="flex flex-col gap-3 p-4 rounded-lg border border-border bg-card text-left w-full h-full transition-all card-ai">
               <div className={cn("w-8 h-8 rounded-md flex items-center justify-center shrink-0", s.bg)}>
                 <Icon className={cn("w-4 h-4", s.color)} />
               </div>
