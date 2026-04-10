@@ -6,16 +6,16 @@ import {
   Zap, Scale, Brain, CheckCircle2, XCircle, Loader2, Clock,
   ChevronRight, Filter,
 } from "lucide-react"
-import { ACTIVITY, REPOS, MODELS } from "@/lib/seed-data"
+import { ACTIVITY, MODELS } from "@/lib/seed-data"
 import { cn } from "@/lib/utils"
 import type { ActivityItem, ModelTier } from "@/lib/seed-data"
 
 const TYPE_CONFIG: Record<ActivityItem["type"], { label: string; icon: React.ElementType; color: string; bg: string }> = {
-  analysis: { label: "Analysis",   icon: BarChart2,     color: "text-yellow-400",  bg: "bg-yellow-400/10" },
-  fix:      { label: "Fix",        icon: Wrench,        color: "text-orange-400",  bg: "bg-orange-400/10" },
-  pr:       { label: "PR",         icon: GitPullRequest, color: "text-indigo-400", bg: "bg-indigo-400/10" },
-  deploy:   { label: "Deploy",     icon: Rocket,        color: "text-emerald-400", bg: "bg-emerald-400/10" },
-  connect:  { label: "Connect",    icon: Link2,         color: "text-blue-400",    bg: "bg-blue-400/10" },
+  analysis: { label: "Analysis",    icon: BarChart2,      color: "text-yellow-400",  bg: "bg-yellow-400/10" },
+  fix:      { label: "Fix",         icon: Wrench,         color: "text-orange-400",  bg: "bg-orange-400/10" },
+  pr:       { label: "PR",          icon: GitPullRequest, color: "text-purple-400",  bg: "bg-purple-400/10" },
+  deploy:   { label: "Deploy",      icon: Rocket,         color: "text-emerald-400", bg: "bg-emerald-400/10" },
+  connect:  { label: "Connect",     icon: Link2,          color: "text-primary",     bg: "bg-primary/10" },
 }
 
 const STATUS_CONFIG: Record<ActivityItem["status"], { label: string; color: string; icon: React.ElementType }> = {
@@ -28,95 +28,23 @@ const STATUS_CONFIG: Record<ActivityItem["status"], { label: string; color: stri
 const MODEL_ICON: Record<ModelTier, React.ElementType> = { fast: Zap, balanced: Scale, deep: Brain }
 const MODEL_COLOR: Record<ModelTier, string> = { fast: "text-green-400", balanced: "text-blue-400", deep: "text-purple-400" }
 
-// Extended audit rows for the activity page
-const AUDIT_LOG: Array<ActivityItem & {
-  trigger: string
-  evidence: string
-  output: string
-  approvalState: "auto" | "approved" | "pending" | "rejected"
-}> = [
-  {
-    id: "a1",
-    type: "analysis",
-    title: "Deep analysis completed",
-    description: "Found 7 issues across api-gateway — 2 critical, 3 high",
-    timestamp: "8m ago",
-    status: "success",
-    repoName: "acme/api-gateway",
-    model: "deep",
-    trigger: "Manual — triggered by engineer@acme.com",
-    evidence: "Inspected 48 source files. Found 14 function-level security patterns. Matched 2 OWASP categories.",
-    output: "6 issues filed across security, performance, and code-quality categories",
-    approvalState: "auto",
-  },
-  {
-    id: "a2",
-    type: "fix",
-    title: "Patch generated: SQL injection fix",
-    description: "SQL injection fix ready for review — confidence 97%",
-    timestamp: "10m ago",
-    status: "success",
-    repoName: "acme/api-gateway",
-    model: "deep",
-    trigger: "Auto — triggered after analysis completed (issue i1)",
-    evidence: "Reviewed src/routes/users.ts lines 44-51. Identified unparameterized query. Cross-referenced pg library docs.",
-    output: "2-line patch replacing string interpolation with parameterized placeholder",
-    approvalState: "pending",
-  },
-  {
-    id: "a3",
-    type: "pr",
-    title: "Pull request opened",
-    description: "mase/fix-sql-injection-i1 → main — all checks passing",
-    timestamp: "10m ago",
-    status: "success",
-    repoName: "acme/api-gateway",
-    trigger: "Manual — approved by engineer@acme.com",
-    evidence: "Patch approved in fix review. Branch created from main HEAD a3f9c21.",
-    output: "PR #142 opened — title: 'fix: parameterize SQL queries (MASE-i1)'",
-    approvalState: "approved",
-  },
-  {
-    id: "a4",
-    type: "deploy",
-    title: "Deployment succeeded",
-    description: "frontend-app deployed to Vercel in 48s",
-    timestamp: "12m ago",
-    status: "success",
-    repoName: "acme/frontend-app",
-    trigger: "Auto — triggered on merge to main",
-    evidence: "24 pages built. Bundle size 2.4 MB. No warnings.",
-    output: "Live at https://frontend-app-acme.vercel.app",
-    approvalState: "auto",
-  },
-  {
-    id: "a5",
-    type: "analysis",
-    title: "Analysis running",
-    description: "Scanning data-pipeline for security and quality issues...",
-    timestamp: "15m ago",
-    status: "running",
-    repoName: "acme/data-pipeline",
-    model: "deep",
-    trigger: "Manual — triggered by engineer@acme.com",
-    evidence: "Scanning 62 Python files. 24% complete.",
-    output: "In progress — 3 issues filed so far",
-    approvalState: "auto",
-  },
-  {
-    id: "a6",
-    type: "deploy",
-    title: "Deployment failed",
-    description: "data-pipeline build error — torch dependency conflict",
-    timestamp: "1h ago",
-    status: "error",
-    repoName: "acme/data-pipeline",
-    trigger: "Auto — triggered on push to main",
-    evidence: "pip install failed at torch==2.1.0. Railway builder returned exit 1.",
-    output: "Build failed after 67s — no deployment",
-    approvalState: "auto",
-  },
-]
+const APPROVAL_COLOR: Record<string, string> = {
+  auto:     "text-muted-foreground bg-secondary border-border",
+  approved: "text-green-400 bg-green-400/10 border-green-400/20",
+  pending:  "text-yellow-400 bg-yellow-400/10 border-yellow-400/20",
+  rejected: "text-red-400 bg-red-400/10 border-red-400/20",
+}
+const APPROVAL_LABEL: Record<string, string> = {
+  auto: "No approval required", approved: "Approved", pending: "Awaiting approval", rejected: "Rejected",
+}
+
+const AUDIT_LOG = ACTIVITY.map((item, i) => ({
+  ...item,
+  trigger: i % 2 === 0 ? "Manual — triggered by engineer@acme.com" : "Auto — triggered by pipeline",
+  evidence: `Inspected source files and matched ${i + 2} patterns. Analysis complete.`,
+  output: item.status === "error" ? "Build failed — no output" : "Completed successfully",
+  approvalState: (["auto", "pending", "approved", "auto", "auto", "auto"] as const)[i] ?? "auto",
+}))
 
 type FilterType = "all" | ActivityItem["type"]
 type FilterStatus = "all" | ActivityItem["status"]
@@ -134,20 +62,9 @@ export function ActivityScreen() {
 
   const selected = AUDIT_LOG.find((a) => a.id === selectedId)
 
-  const APPROVAL_COLOR: Record<string, string> = {
-    auto:     "text-muted-foreground bg-secondary border-border",
-    approved: "text-green-400 bg-green-400/10 border-green-400/20",
-    pending:  "text-yellow-400 bg-yellow-400/10 border-yellow-400/20",
-    rejected: "text-red-400 bg-red-400/10 border-red-400/20",
-  }
-
-  const APPROVAL_LABEL: Record<string, string> = {
-    auto: "No approval required", approved: "Approved", pending: "Awaiting approval", rejected: "Rejected",
-  }
-
   return (
     <div className="flex gap-0 h-full overflow-hidden">
-      {/* ── Main list ────────────────────────────────────────────────────── */}
+      {/* Main list */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
           <div>
@@ -162,7 +79,9 @@ export function ActivityScreen() {
               className="text-xs h-8 px-2 rounded-md border border-border bg-secondary text-foreground focus:outline-none"
             >
               <option value="all">All types</option>
-              {Object.entries(TYPE_CONFIG).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+              {(Object.entries(TYPE_CONFIG) as [ActivityItem["type"], typeof TYPE_CONFIG[ActivityItem["type"]]][]).map(([k, v]) => (
+                <option key={k} value={k}>{v.label}</option>
+              ))}
             </select>
             <select
               value={statusFilter}
@@ -170,14 +89,38 @@ export function ActivityScreen() {
               className="text-xs h-8 px-2 rounded-md border border-border bg-secondary text-foreground focus:outline-none"
             >
               <option value="all">All statuses</option>
-              {Object.entries(STATUS_CONFIG).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+              {(Object.entries(STATUS_CONFIG) as [ActivityItem["status"], typeof STATUS_CONFIG[ActivityItem["status"]]][]).map(([k, v]) => (
+                <option key={k} value={k}>{v.label}</option>
+              ))}
             </select>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
-          <div className="flex flex-col divide-y divide-border">
-            {filtered.map((item) => {
+        {/* Summary strip */}
+        <div className="flex gap-3 px-6 py-3 border-b border-border shrink-0 overflow-x-auto">
+          {[
+            { label: "Total",     value: AUDIT_LOG.length,                                        color: "text-foreground" },
+            { label: "Success",   value: AUDIT_LOG.filter((a) => a.status === "success").length,  color: "text-green-400" },
+            { label: "Running",   value: AUDIT_LOG.filter((a) => a.status === "running").length,  color: "text-blue-400" },
+            { label: "Failed",    value: AUDIT_LOG.filter((a) => a.status === "error").length,    color: "text-red-400" },
+            { label: "Approvals", value: AUDIT_LOG.filter((a) => a.approvalState === "pending").length, color: "text-yellow-400" },
+          ].map(({ label, value, color }) => (
+            <div key={label} className="flex flex-col gap-0.5 px-3 py-1.5 rounded-md bg-secondary shrink-0 min-w-[60px]">
+              <span className={cn("text-base font-bold tabular-nums", color)}>{value}</span>
+              <span className="text-[10px] text-muted-foreground">{label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* List */}
+        <div className="flex-1 overflow-y-auto divide-y divide-border">
+          {filtered.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 py-16 text-center px-6">
+              <Activity className="w-8 h-8 text-muted-foreground/30" />
+              <p className="text-sm text-muted-foreground">No events match the current filters</p>
+            </div>
+          ) : (
+            filtered.map((item) => {
               const typeCfg = TYPE_CONFIG[item.type]
               const statusCfg = STATUS_CONFIG[item.status]
               const TypeIcon = typeCfg.icon
@@ -190,8 +133,8 @@ export function ActivityScreen() {
                   key={item.id}
                   onClick={() => setSelectedId(isSelected ? null : item.id)}
                   className={cn(
-                    "flex items-center gap-3 px-6 py-3.5 text-left hover:bg-secondary/40 transition-colors",
-                    isSelected && "bg-secondary/60"
+                    "flex items-center gap-3 px-6 py-3.5 w-full text-left hover:bg-secondary/40 transition-colors",
+                    isSelected && "bg-secondary/60 border-l-2 border-primary"
                   )}
                 >
                   <div className={cn("w-7 h-7 rounded-md flex items-center justify-center shrink-0", typeCfg.bg)}>
@@ -219,20 +162,13 @@ export function ActivityScreen() {
                   <ChevronRight className={cn("w-3.5 h-3.5 text-muted-foreground shrink-0 transition-transform", isSelected && "rotate-90")} />
                 </button>
               )
-            })}
-
-            {filtered.length === 0 && (
-              <div className="flex flex-col items-center gap-2 py-16 text-center px-6">
-                <Activity className="w-8 h-8 text-muted-foreground/30" />
-                <p className="text-sm text-muted-foreground">No activity matches the current filters</p>
-              </div>
-            )}
-          </div>
+            })
+          )}
         </div>
       </div>
 
-      {/* ── Audit drawer ──────────────────────────────────────────────────── */}
-      <div className={cn("w-80 shrink-0 border-l border-border overflow-y-auto transition-all", !selected && "hidden lg:block")}>
+      {/* Audit detail drawer */}
+      <div className="w-80 shrink-0 border-l border-border overflow-y-auto bg-card hidden lg:block">
         <div className="p-4">
           {!selected ? (
             <div className="flex flex-col items-center gap-2 py-16 text-center">
@@ -246,14 +182,14 @@ export function ActivityScreen() {
                   {(() => { const I = TYPE_CONFIG[selected.type].icon; return <I className="w-3 h-3" /> })()}
                   {TYPE_CONFIG[selected.type].label}
                 </div>
-                <h3 className="text-sm font-semibold text-foreground text-balance">{selected.title}</h3>
+                <h3 className="text-sm font-semibold text-foreground">{selected.title}</h3>
                 <p className="text-xs text-muted-foreground mt-1">{selected.timestamp}</p>
               </div>
 
               {[
-                { label: "Trigger", value: selected.trigger },
+                { label: "Trigger",  value: selected.trigger },
                 { label: "Evidence", value: selected.evidence },
-                { label: "Output", value: selected.output },
+                { label: "Output",   value: selected.output },
               ].map(({ label, value }) => (
                 <div key={label}>
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">{label}</p>
