@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Github, Brain, Zap, Scale, Settings2, DollarSign, Shield, Users, BookOpen, ToggleRight } from "lucide-react"
 import { MODELS } from "@/lib/seed-data"
 import { Button } from "@/components/ui/button"
@@ -31,6 +31,16 @@ export function SettingsScreen() {
   })
   const [auditLog, setAuditLog] = useState(true)
   const [rbacEnabled, setRbacEnabled] = useState(true)
+  const [showTokenInput, setShowTokenInput] = useState(false)
+  const [githubToken, setGithubToken] = useState("")
+  const [tokenSaved, setTokenSaved] = useState(false)
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem("github_token")
+    if (savedToken) {
+      setTokenSaved(true)
+    }
+  }, [])
 
   return (
     <div className="flex flex-col gap-6 p-6">
@@ -46,36 +56,111 @@ export function SettingsScreen() {
             <div className="w-8 h-8 rounded-md bg-secondary flex items-center justify-center">
               <Github className="w-4 h-4 text-foreground" />
             </div>
-            <div>
+            <div className="flex-1">
               <h2 className="text-sm font-semibold text-foreground">GitHub Connection</h2>
-              <p className="text-xs text-muted-foreground">Repository access and webhook configuration</p>
+              <p className="text-xs text-muted-foreground">Repository access via Personal Access Token</p>
             </div>
-            <div className="ml-auto flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-green-400" />
-              <span className="text-xs text-green-400 font-medium">Connected</span>
+            <div className="flex items-center gap-1.5">
+              <span className={cn("w-2 h-2 rounded-full", tokenSaved ? "bg-green-400" : "bg-muted-foreground/30")} />
+              <span className={cn("text-xs font-medium", tokenSaved ? "text-green-400" : "text-muted-foreground")}>
+                {tokenSaved ? "Connected" : "Not connected"}
+              </span>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-2 mb-3">
-            {[
-              { label: "Organisation", value: "acme-corp" },
-              { label: "Repositories", value: "4 connected" },
-              { label: "Webhooks", value: "Active" },
-            ].map((item) => (
-              <div key={item.label} className="p-2.5 rounded-md bg-secondary text-center">
-                <p className="text-[10px] text-muted-foreground mb-0.5">{item.label}</p>
-                <p className="text-xs text-foreground font-medium">{item.value}</p>
+
+          {!showTokenInput ? (
+            <div className="space-y-3">
+              <div className="rounded-md bg-secondary/50 border border-border p-3">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">Required Permissions</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {["repo", "workflow", "read:org", "admin:repo_hook"].map((p) => (
+                    <span key={p} className="text-[10px] font-mono bg-secondary border border-border text-muted-foreground px-1.5 py-0.5 rounded">
+                      {p}
+                    </span>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
-          <div className="rounded-md bg-secondary/50 border border-border p-3 mb-3">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Permissions</p>
-            <div className="flex flex-wrap gap-1.5">
-              {["repo:read", "repo:write", "pull_requests:write", "checks:read", "webhooks:write"].map((p) => (
-                <span key={p} className="text-[10px] font-mono bg-secondary border border-border text-muted-foreground px-1.5 py-0.5 rounded">{p}</span>
-              ))}
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-xs border-border h-7"
+                  onClick={() => setShowTokenInput(true)}
+                >
+                  {tokenSaved ? "Update Token" : "Add GitHub Token"}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-xs h-7"
+                  onClick={() => window.open("https://github.com/settings/tokens/new?scopes=repo,workflow,read:org,admin:repo_hook", "_blank")}
+                >
+                  Generate Token →
+                </Button>
+              </div>
             </div>
-          </div>
-          <Button variant="outline" size="sm" className="text-xs border-border h-7">Manage Connection</Button>
+          ) : (
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs text-muted-foreground mb-1.5 block">
+                  GitHub Personal Access Token (PAT)
+                </label>
+                <input
+                  type="password"
+                  value={githubToken}
+                  onChange={(e) => setGithubToken(e.target.value)}
+                  placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                  className="w-full rounded-md border border-border bg-background text-foreground text-sm px-3 py-2 font-mono focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/50"
+                />
+                <p className="text-[11px] text-muted-foreground mt-1.5">
+                  Token is stored locally and used for GitHub API operations
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  size="sm" 
+                  className="text-xs h-7 bg-primary hover:bg-primary/90"
+                  onClick={() => {
+                    if (githubToken.trim()) {
+                      localStorage.setItem("github_token", githubToken)
+                      setTokenSaved(true)
+                      setShowTokenInput(false)
+                      setGithubToken("")
+                    }
+                  }}
+                  disabled={!githubToken.trim()}
+                >
+                  Save Token
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-xs border-border h-7"
+                  onClick={() => {
+                    setShowTokenInput(false)
+                    setGithubToken("")
+                  }}
+                >
+                  Cancel
+                </Button>
+                {tokenSaved && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-xs h-7 text-red-400 hover:text-red-300"
+                    onClick={() => {
+                      localStorage.removeItem("github_token")
+                      setTokenSaved(false)
+                      setShowTokenInput(false)
+                      setGithubToken("")
+                    }}
+                  >
+                    Remove Token
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Authentication & Access */}
